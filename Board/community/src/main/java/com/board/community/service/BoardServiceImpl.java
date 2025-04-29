@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.board.community.domain.Board;
+import com.board.community.domain.Files;
 import com.board.community.mapper.BoardMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,9 @@ public class BoardServiceImpl implements BoardService{
     
     @Autowired
     private BoardMapper boardMapper;
+
+    @Autowired
+    private FileService fileService;
 
     @Override
     public java.util.List<Board> list() throws Exception {
@@ -43,14 +47,12 @@ public class BoardServiceImpl implements BoardService{
 
         if( fileList != null )
             for (MultipartFile file : fileList) {
-
-                log.info("----------------------------------");
-                log.info("원본 파일명 : " + file.getOriginalFilename());
-                log.info("컨텐츠파일 : " + file.getContentType());
-                log.info("파라미터명 : " + file.getName());
-                log.info("용량 : " + file.getSize() + " Bytes");
-                log.info("----------------------------------");
-
+                Files uploadFile = new Files();
+                uploadFile.setFile(file);
+                uploadFile.setParentTable("board");
+                uploadFile.setParentNo(board.getNo());
+                uploadFile.setType("main");
+                fileService.upload(uploadFile);
             }
 
 

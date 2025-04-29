@@ -1,6 +1,9 @@
 package com.board.community.domain;
 
 import java.util.Date;
+import java.util.UUID;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,5 +24,13 @@ public class Files {
     private int parentNo;               // 부모번호 10
     private Date createdAt;
     private Date updatedAt;
+
+    private MultipartFile file;         // 파일 데이터
+
+    public Files() {
+
+        this.id = UUID.randomUUID().toString();
+
+    }
 
 }

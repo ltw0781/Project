@@ -27,17 +27,113 @@
                 </td>
             </tr>
             <tr>
-                <td>
+                <td colspan="2">
                     <button type="button" th:onclick="update()">수정</button>
                     <button type="button" onclick="location.href='/board/list'">목록</button>
                 </td>
             </tr>
         </table>
+        <h3>파일 목록</h3>
+        <section id="file-list">
+            <table border="1">
+                <tr>
+                    <th>no</th>
+                    <!-- <th>id</th> -->
+                    <th>이미지</th>
+                    <th>파일명</th>
+                    <th>용량</th>
+                    <th>타입</th>
+                    <th>액션</th>
+                </tr>
+                <th:block th:each="file : ${fileList}">
+                    <tr>
+                        <td><span th:text="${file.no}"></span></td>
+                        <!-- <td><span th:text="${file.id}"></span></td> -->
+                        <td>
+                            <img th:src="|/img?id=${file.id}|" height="100" alt="파일 이미지">
+                        </td>
+                        <td><span th:text="${file.fileName}"></span></td>
+                        <td><span th:text="${file.fileSize}"></span></td>
+                        <td><span th:text="${file.type}"></span></td>
+                        <td>
+                            <button type="button" th:onclick="download( [[${file.id}]] )">다운로드</button>
+                            <button type="button" th:onclick="remove( this, [[${file.id}]] )">삭제</button>
+                        </td>
+                    </tr>
+                </th:block>
+            </table>
+        </section>
     </form>
     <script>
+
+        // 수정 화면 이동
         function update() {
             let id = "[[${board.id}]]"
             location.href = "/board/update?id=" + id
+        }
+
+        // 다운로드
+        function download(id) {
+            location.href = `/file/${id}`
+        }
+
+        // 파일 삭제
+        function remove( element, id ) {
+
+            let request = new XMLHttpRequest()
+
+            request.onreadystatechange = function() {
+
+                // 요청 완료 및 성공
+                if ( request.readyState == request.DONE && request.status == 200 /* request.responseText == 'SUCCESS' */ ) {
+                    let response = request.responseText
+                    if ( response == 'SUCCESS' ) {
+                        alert('파일 삭제 성공!')
+                        // 파일 목록 갱신
+                        // 방법1 - 페이지 새로고침
+                        // location.reload()
+
+                        // 방법2 - DOM 으로 파일항목 행 삭제
+                        // alert(element)
+                        // console.log("element : " + element)
+                        // element.parentNode.parentNode.remove()  // button > td > tr
+
+                        // 방법 3 - 파일목록 비동기로 요청
+                        //1️⃣ JSON 데이터를 받고 렌더링
+                        //2️⃣ 파일목록 뷰(html)를 응답받아 렌더링
+                        getFileList()
+
+                        
+                    }
+                    else {
+                        alert('파일 삭제 실패!')
+                    }
+                }
+            }
+            const url = `/file/${id}`
+            request.open( 'DELETE', url, true )
+            request.send()
+        }
+
+        // 파일 목록 비동기 요청
+        function getFileList() {
+            let parentTable = 'board'
+            let parentNo = '[[${board.no}]]'
+            let url = `/file?parentTable=${parentTable}&parentNo=${parentNo}`
+
+            let request = new XMLHttpRequest()
+
+            request.onreadystatechange = function() {
+                if( request.readyState == request.DONE && request.status == 200 ) {
+                    console.log('파일 목록 갱신 성공');
+                    let fileList = request.responseText
+                    let $fileList = document.getElementById('file-list')
+                    $fileList.innerHTML = ""        // 기본 파일 목록 비우기
+                    $fileList.innerHTML = fileList  // 새로 조회한 파일목록으로 갱신
+                }
+            }
+            request.open('GET', url, true)
+            request.send()
         }
     </script>
 </body>

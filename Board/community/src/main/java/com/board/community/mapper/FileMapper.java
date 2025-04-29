@@ -19,4 +19,7 @@ public interface FileMapper {
 
     public int delete(String id) throws Exception;
 
+    // 부모테이블 기준 파일 목록
+    public List<Files> listByParent(Files file) throws Exception;
+
 }

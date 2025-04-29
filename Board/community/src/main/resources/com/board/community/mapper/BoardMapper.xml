@@ -24,7 +24,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <!-- 게시글 등록 -->
-    <insert id="insert">
+    <!-- ⭐Mybatis 의 useGeneratedKeys 를 사용하면
+        MySQL 의 AUTO_INCREMENT 되는 값을 전달한 객체에 지정한 변수로 매핑할 수 있다.
+    -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="no">
 
         INSERT INTO board ( id, title, writer, content )
         VALUES ( #{id}, #{title}, #{writer}, #{content} )

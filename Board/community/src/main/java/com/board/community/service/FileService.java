@@ -16,4 +16,10 @@ public interface FileService {
 
     public int delete(String id) throws Exception;
 
+    // 파일 업로드
+    public boolean upload(Files file) throws Exception;
+
+    // 부모테이블 기준 파일 목록
+    public List<Files> listByParent(Files file) throws Exception;
+
 }

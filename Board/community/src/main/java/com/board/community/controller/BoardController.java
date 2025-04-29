@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.board.community.domain.Board;
+import com.board.community.domain.Files;
 import com.board.community.service.BoardService;
+import com.board.community.service.FileService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +36,9 @@ public class BoardController {
 
     @Autowired
     private BoardService boardService;
+
+    @Autowired
+    private FileService fileService;
     
     /**
      * 게시글 목록록
@@ -56,10 +61,18 @@ public class BoardController {
      * @return
      */
     @GetMapping("/select")
-    public String select(Model model, @RequestParam("id") String id) throws Exception{
+    public String select(Model model, @RequestParam("id") String id, Files file) throws Exception{
 
+        // 게시글 조회
         Board board = boardService.select(id);
         model.addAttribute("board", board);
+
+        // 파일 목록 조회
+        file.setParentNo(board.getNo());
+        file.setParentTable("board");
+        List<Files> fileList = fileService.listByParent(file);
+        model.addAttribute("fileList", fileList);
+
         return "/board/select";
 
     }
