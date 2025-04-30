@@ -117,5 +117,23 @@ public class FileServiceImpl implements FileService{
         List<Files> fileList = fileMapper.listByParent(file);
         return fileList;
     }
+
+    @Override
+    public int deleteByParent(Files file) throws Exception {
+        List<Files> deleteFileList = fileMapper.listByParent(file);
+
+        // 1️⃣파일 시스템 파일 삭제제
+        for (Files f : deleteFileList) {
+            File deleteFile = new File(f.getFilePath());
+            if( deleteFile.exists() ) {
+                deleteFile.delete();
+            }
+        }
+
+        // 2️⃣첨부된 파일 전체 한번에 삭제
+        int result = fileMapper.deleteByParent(file);
+        log.info(result + " 건의 파일 정보가 삭제되었습니다.");
+        return result;
+    }
     
 }

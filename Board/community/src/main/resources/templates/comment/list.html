@@ -1,0 +1,20 @@
+
+<th:block th:each="comment : ${commentList}">
+    <table border="1" style="width: 300px;">
+        <tr>
+            <td><span th:text="${comment.writer}">작성자</span></td>
+            <td align="right"><span th:text="${#dates.format( comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}">등록일자</span></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <p th:text="${comment.content}"></p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="right">
+                <button type="button">수정</button>
+                <button type="button">삭제</button>
+            </td>
+        </tr>
+    </table>
+</th:block>

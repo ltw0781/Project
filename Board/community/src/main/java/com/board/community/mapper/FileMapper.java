@@ -22,4 +22,7 @@ public interface FileMapper {
     // 부모테이블 기준 파일 목록
     public List<Files> listByParent(Files file) throws Exception;
 
+    // 부모테이블 기준 파일 삭제
+    public int deleteByParent(Files file) throws Exception;
+
 }

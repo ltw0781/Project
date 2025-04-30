@@ -1,6 +1,7 @@
 package com.board.community.controller;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,9 @@ public class FileController {
 
         String filePath = file.getFilePath();
         String fileName = file.getFileName();
+
+        // 한글 파일명 인코딩
+        fileName = URLEncoder.encode(fileName, "UTF-8");
 
         // 파일 객체 생성
         File f = new File(filePath);
