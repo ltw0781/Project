@@ -10,7 +10,8 @@ import com.board.community.domain.Board;
 @Mapper
 public interface BoardMapper {
     
-    public List<Board> list() throws Exception;
+    // public List<Board> list() throws Exception;
+    public List<Board> list(String keyword) throws Exception;
 
     public Board select(@Param("id") String id) throws Exception;
 

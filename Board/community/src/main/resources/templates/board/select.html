@@ -224,6 +224,180 @@
                 $commentList.innerHTML = commentList
             }
         }
+
+        // 댓글 삭제
+        function removeComment(id) {
+            let request = new XMLHttpRequest()
+            let url = `/comment/${id}`
+            request.open('DELETE', url, true)
+            request.send()
+            request.onreadystatechange = function() {
+                if ( request.readyState == request.DONE && request.status == 200 ) {
+                    let response = request.responseText
+                    if( response == 'SUCCESS' ) {
+                        console.log('댓글 삭제 성공')
+                        commentList()
+                    }
+                    else {
+                        alert('댓글 삭제 실패')
+                    }
+                }
+            }
+        }
+
+        // 댓글 [수정] 버튼 클릭 시 - 수정 폼으로 전환
+        function editComment( button , id ) {
+
+            let $table = button.closest('table')
+
+            console.log($table);
+
+            // 기존 작성자와 기존 내용을 가져오기
+            let writer = $table.querySelector('.comment-writer').textContent
+            let content = $table.querySelector('.comment-content').textContent
+            
+            // console.log(writer)
+            // console.log(content)
+
+            // 기존 조회 폼은 숨김
+            $table.style.display = 'none'
+
+            // 수정 폼 삽입
+            let updateForm = `
+                <table border="1">
+                    <tr>
+                        <td>
+                            <input type="text" name="writer" id="comment-writer" value="${writer}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea name="content" id="comment-content" rows="5" cols="40">${content}</textarea>
+                        </td>
+                    </tr>
+                    <td align="right">
+                        <button type="button" onclick="updateComment( '${id}' )">수정</button>
+                        <button type="button" onclick="cancelComment( this )">취소</button>
+                    </td>
+                </table>
+            `
+            // DOM 노드는 after() 함수로 다음 요소로 추가
+            // $table.after(updateForm)
+            // 텍스트로된 html 코드를 다음 요소로 추가
+            $table.insertAdjacentHTML("afterend", updateForm)
+        }
+
+        // 댓글 수정 요청
+        function updateComment(id) {
+            console.log(`id : ${id}`);
+            let commentWriter = document.getElementById('comment-writer').value
+            let commentContent = document.getElementById('comment-content').value
+            let data = {
+                'id'        : id,
+                'writer'    : commentWriter,
+                'content'   : commentContent
+            }
+
+            let request = new XMLHttpRequest()
+            let url = '/comment'
+            request.open( 'PUT', url, true )
+            request.setRequestHeader('Content-Type', 'application/json')
+            request.send( JSON.stringify(data) )
+
+            request.onreadystatechange = function() {
+                if (request.readyState == request.DONE && request.status == 200) {
+                    let response = request.responseText
+                    if( response == 'SUCCESS') {
+                        console.log('댓글 수정 성공');
+                        commentList()   // 댓글 목록 갱신
+                    }
+                    else {
+                        alert('댓글 수정 실패')
+                    }
+                }
+            }
+        }
+
+        // 댓글 수정 중 - 취소 버튼 클릭 시
+        function cancelComment( cancelButton ) {
+            // 수정폼
+            let $table = cancelButton.closest('table')
+
+            // 조회폼
+            let $comment = $table.previousElementSibling    // 바로 앞의 형제자매 요소
+
+            $comment.style.display = 'table'                // 조회폼 보여주기
+            $table.remove()                                 // 수정폼 제거
+        }
+
+        // 답글 버튼 클릭 시 - 답글 등록 폼 추가
+        function insertReply(insertButton, parentNo) {
+            let $table = insertButton.closest('table')      // 조회폼
+            
+            let insertForm = `
+                <table border="1" class="reply-form">
+                    <tr>
+                        <td>
+                            <input type="text" name="writer" id="reply-writer" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea name="content" id="reply-content" rows="5" cols="40"></textarea>
+                        </td>
+                    </tr>
+                    <td align="right">
+                        <button type="button" onclick="createReply( ${parentNo} )">등록</button>
+                        <button type="button" onclick="cancelComment( this )">취소</button>
+                    </td>
+                </table>
+            `
+
+            // 답글 등록 폼이 여러개 생기지 않도록 기존 등록 폼 제건
+            let replyForms = document.getElementsByClassName('reply-form')
+            for (let i = 0; i < replyForms.length; i++) {
+                const replyForm = replyForms[i];
+                replyForm.remove()
+                
+            }
+
+            // 텍스트로된 html 코드를 다음 요소로 추가
+            $table.insertAdjacentHTML("afterend", insertForm)
+        }
+
+        // 답글 등록 요청
+        function createReply(parentNo) {
+            let boardNo = "[[${board.no}]]"
+            let writer = document.getElementById('reply-writer').value
+            let content = document.getElementById('reply-content').value
+
+            let data = {
+                parentNo : parentNo,
+                boardNo : boardNo,
+                writer : writer,
+                content : content
+
+            }
+
+            let request = new XMLHttpRequest()
+            let url = "/comment"
+            request.open("POST", url, true)
+            request.setRequestHeader('Content-type', 'application/json')
+            request.send( JSON.stringify(data) )
+
+            request.onreadystatechange = function () {
+                if( request.readyState == request.DONE && request.status == 200 ) {
+                    let response = request.responseText
+                    if ( response == 'SUCCESS' ) {
+                        console.log('답글 등록 성공')
+                        commentList()
+                    }
+                    else {
+                        alert('답글 등록 실패')
+                    }
+                }
+            }
+        }
     </script>
 </body>
 

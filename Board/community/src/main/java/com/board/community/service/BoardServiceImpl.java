@@ -25,7 +25,7 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public java.util.List<Board> list() throws Exception {
 
-        List<Board> list = boardMapper.list();
+        List<Board> list = boardMapper.list("");
         return list;
 
     }
@@ -97,6 +97,13 @@ public class BoardServiceImpl implements BoardService{
 
         return result;
 
+    }
+
+    // 검색
+    @Override
+    public List<Board> list(String keyword) throws Exception {
+        List<Board> boardList = boardMapper.list(keyword);
+        return boardList;
     }
     
     

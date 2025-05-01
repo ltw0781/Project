@@ -7,7 +7,15 @@
 </head>
 <body>
     <h1>게시글 목록</h1>
-    <a href="/board/insert">글쓰기</a>
+    
+    <div style="display: flex;">
+        <a href="/board/insert">글쓰기</a>
+        <form action="/board/list" method="get">
+            <input type="text" name="keyword" placeholder="검색어를 입력해주세요." th:value="${param.keyword}">
+            <input type="submit" value="검색">
+        </form>
+    </div>
+
     <table border="1">
         <thead>
             <tr>

@@ -20,16 +20,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <!-- 등록 -->
-    <insert id="insert">
-        INSERT INTO comments( id, board_no, writer, content )
-        VALUES( #{id}, #{boardNo}, #{writer}, #{content} )
+    <insert id="insert" useGeneratedKeys="true" keyProperty="no">
+        INSERT INTO comments( id, board_no, parent_no, writer, content )
+        VALUES( #{id}, #{boardNo}, #{parentNo}, #{writer}, #{content} )
     </insert>
 
     <!-- 수정 -->
     <update id="update">
         UPDATE comments
-            SET writer = #{writer}
+            SET parent_no = #{parentNo}
+                ,writer = #{writer}
                 ,content = #{content}
+                ,updated_at = now()
         WHERE id = #{id}
     </update>
 
@@ -44,12 +46,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT *
         FROM comments
         WHERE board_no = #{boardNo}
+        ORDER BY parent_no DESC, created_at ASC
     </select>
 
     <!-- 게시글 기준 삭제 -->
     <delete id="deleteByParent">
         DELETE FROM comments
         WHERE board_no = #{boardNo}
+    </delete>
+
+    <!-- 답글 목록 -->
+    <select id="replyList" resultType="Comments">
+        SELECT *
+        FROM comments
+        WHERE parent_no = #{parentNo}
+            AND no != #{parentNo}
+    </select>
+
+    <!-- parentNo 기준 댓글 삭제 -->
+    <delete id="deleteReplyByParent">
+        DELETE FROM comments
+        WHERE parent_no = #{parentNo}
     </delete>
 
 </mapper>

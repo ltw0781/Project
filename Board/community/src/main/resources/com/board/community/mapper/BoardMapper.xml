@@ -11,6 +11,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
         SELECT *
         FROM board
+        WHERE title LIKE CONCAT('%', #{keyword}, '%')
+           OR writer LIKE CONCAT('%', #{keyword}, '%')
+           OR content LIKE CONCAT('%', #{keyword}, '%')
 
     </select>
 
