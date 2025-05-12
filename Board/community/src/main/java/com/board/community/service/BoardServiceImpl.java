@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.board.community.domain.Board;
 import com.board.community.domain.Files;
+import com.board.community.domain.Option;
+import com.board.community.domain.Page;
 import com.board.community.mapper.BoardMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,7 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public java.util.List<Board> list() throws Exception {
 
-        List<Board> list = boardMapper.list("");
+        List<Board> list = boardMapper.list(new Option(), new Page());
         return list;
 
     }
@@ -102,8 +104,41 @@ public class BoardServiceImpl implements BoardService{
     // 검색
     @Override
     public List<Board> list(String keyword) throws Exception {
-        List<Board> boardList = boardMapper.list(keyword);
+        // List<Board> boardList = boardMapper.list(keyword);
+        Option option = new Option();
+        option.setKeyword(keyword);
+        List<Board> boardList = boardMapper.list(new Option(), new Page());
         return boardList;
+    }
+
+    // 검색+옵션
+    @Override
+    public List<Board> list(Option option) throws Exception {
+        List<Board> boardList = boardMapper.list(option, new Page());
+        return boardList;
+    }
+
+    @Override
+    public List<Board> list(Option option, int rows) throws Exception {
+        List<Board> boardList = boardMapper.list(option, new Page());
+        return boardList;
+    }
+
+    @Override
+    public List<Board> list(Option option, Page page) throws Exception {
+        // 데이터 개수
+        int total = count(option);
+        page.setTotal(total);
+        
+        List<Board> boardList = boardMapper.list(option, page);
+
+
+        return boardList;
+    }
+
+    @Override
+    public int count(Option option) throws Exception {
+        return boardMapper.count(option);
     }
     
     

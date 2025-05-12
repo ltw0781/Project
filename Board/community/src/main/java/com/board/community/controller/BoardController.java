@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.board.community.domain.Board;
 import com.board.community.domain.Files;
+import com.board.community.domain.Option;
+import com.board.community.domain.Page;
 import com.board.community.service.BoardService;
 import com.board.community.service.FileService;
 
@@ -41,16 +44,37 @@ public class BoardController {
     private FileService fileService;
     
     /**
-     * 게시글 목록록
+     * 게시글 목록
      * @param model
      * @return
      * @throws Exception
      */
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(name = "keyword" , defaultValue = "") String keyword) throws Exception{
+    public String list(Model model
+                    /*,@RequestParam(name = "keyword" , defaultValue = "") String keyword */ 
+                      ,Option option
+                    //   ,@RequestParam(name = "rows", defaultValue = "10")
+                    //    @ModelAttribute(name = "rows") int rows
+                      ,Page page
+                      )throws Exception{
 
-        List<Board> boardList = boardService.list(keyword);
+        List<Board> boardList = boardService.list(option, page);
         model.addAttribute("boardList", boardList);
+        model.addAttribute("option", option);
+        model.addAttribute("rows", page.getRows());
+        model.addAttribute("page", page);
+
+        String pageUrl = UriComponentsBuilder.fromPath("/board/list")
+                            // .queryParam("page", page.getPage())
+                            .queryParam("keyword", option.getKeyword())
+                            .queryParam("code", option.getCode())
+                            .queryParam("rows", page.getRows())
+                            .queryParam("orderCode", option.getOrderCode())
+                            .build()
+                            .toUriString();
+
+        model.addAttribute("pageUrl", pageUrl);
+
         return "/board/list";
 
     }

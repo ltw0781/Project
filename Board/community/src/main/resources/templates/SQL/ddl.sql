@@ -64,5 +64,3 @@ CREATE TABLE `comments` (
 -- ALTER TABLE `comments` ADD CONSTRAINT `PK_COMMENTS` PRIMARY KEY (
 -- 	`no`
 -- );
-
-SELECT * FROM board;
